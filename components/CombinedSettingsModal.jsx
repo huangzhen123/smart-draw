@@ -67,7 +67,6 @@ export default function CombinedSettingsModal({
           name: '服务器配置（访问密码）',
           type: data.config.type,
           baseUrl: data.config.baseUrl,
-          apiKey: data.config.apiKey,
           model: data.config.model,
         };
 

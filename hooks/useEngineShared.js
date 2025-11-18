@@ -118,11 +118,29 @@ export function useEngineShared() {
    * @returns {Promise<string>} 累积的生成内容
    */
   const callLLMStream = useCallback(async (llmConfig, fullMessages) => {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    // 如果启用了访问密码模式，则通过请求头传递 access-password，
+    // 由服务端根据环境变量自动注入 apiKey
+    if (typeof window !== 'undefined') {
+      try {
+        const usePassword =
+          localStorage.getItem('smart-diagram-use-password') === 'true';
+        const accessPassword =
+          localStorage.getItem('smart-diagram-access-password') || '';
+        if (usePassword && accessPassword) {
+          headers['x-access-password'] = accessPassword;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
     const response = await fetch('/api/llm/stream', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         config: llmConfig,
         messages: fullMessages,
@@ -289,12 +307,31 @@ export function useEngineShared() {
       return null;
     }
 
-    return {
+    const baseConfig = {
       type: activeConfig.type,
       baseUrl: activeConfig.baseUrl,
-      apiKey: activeConfig.apiKey,
       model: activeConfig.model,
     };
+
+    // 本地配置模式下才需要在前端携带 apiKey；
+    // 访问密码模式下 apiKey 仅存在于服务端环境变量中。
+    if (typeof window === 'undefined') {
+      return { ...baseConfig, apiKey: activeConfig.apiKey };
+    }
+
+    try {
+      const usePassword =
+        localStorage.getItem('smart-diagram-use-password') === 'true';
+      if (!usePassword) {
+        return { ...baseConfig, apiKey: activeConfig.apiKey };
+      }
+    } catch {
+      // 读取失败时退回到直接返回 apiKey（用于本地配置）
+      return { ...baseConfig, apiKey: activeConfig.apiKey };
+    }
+
+    // 访问密码模式：不在前端传播 apiKey
+    return baseConfig;
   }, []);
 
   return {
