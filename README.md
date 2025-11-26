@@ -5,6 +5,8 @@
 ## 🌐 在线网站
 进入在线网站直接使用：https://smart-draw.aizhi.site/
 
+## 📖 文档
+查看详细使用文档：https://smart-draw-doc.aizhi.site/
 
 ## English Version
 Read the English version: [README_EN.md](README_EN.md)
