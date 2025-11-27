@@ -1,10 +1,8 @@
 services:
   smart-diagram:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/liujuntao123/smart-diagram:latest
     ports:
-      - "3000:3010"
+      - "3010:3000"
     environment:
       - NODE_ENV=production
       # Server-side LLM configuration (optional)

@@ -96,6 +96,45 @@ pnpm dev
 
 访问 http://localhost:3000 即可使用。
 
+## 🐳 Docker 部署
+
+使用 Docker 可以快速部署，无需安装 Node.js 环境。
+
+### 方式一：使用 Docker Compose（推荐）
+
+1. 下载 `docker-compose.yml` 文件，或创建以下内容：
+
+```yaml
+services:
+  smart-diagram:
+    image: ghcr.io/liujuntao123/smart-diagram:latest
+    ports:
+      - "3010:3000"
+    environment:
+      - NODE_ENV=production
+      # Server-side LLM configuration (optional)
+      # - ACCESS_PASSWORD=your-secure-password
+      # - SERVER_LLM_TYPE=openai
+      # - SERVER_LLM_BASE_URL=https://api.openai.com/v1
+      # - SERVER_LLM_API_KEY=sk-your-api-key-here
+      # - SERVER_LLM_MODEL=gpt-4
+    restart: unless-stopped
+```
+
+2. 启动容器：
+
+```bash
+docker-compose up -d
+```
+
+3. 访问 http://localhost:3010 即可使用。
+
+### 方式二：直接使用 Docker
+
+```bash
+docker run -d -p 3010:3000 ghcr.io/liujuntao123/smart-diagram:latest
+```
+
 ### 配置服务器端 LLM（可选）
 
 如果你想为用户提供统一的 LLM 配置，避免他们自己申请 API Key，可以配置服务器端访问密码功能：

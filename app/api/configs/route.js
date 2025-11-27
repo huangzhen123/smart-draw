@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { testConnection } from '@/lib/llm-client';
+export const runtime = 'edge';
 
 /**
  * GET /api/configs/test-connection

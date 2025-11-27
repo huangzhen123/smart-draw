@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchModels } from '@/lib/llm-client';
+export const runtime = 'edge';
 
 /**
  * GET /api/models
