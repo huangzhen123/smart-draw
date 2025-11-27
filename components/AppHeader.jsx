@@ -80,7 +80,7 @@ export default function AppHeader() {
               <line x1="10" y1="1" x2="10" y2="4" />
               <line x1="14" y1="1" x2="14" y2="4" />
             </svg>
-            <span>Buy me a coffee</span>
+            <span>请作者喝杯奶茶</span>
           </button>
           {/* Documentation Link */}
           <a
