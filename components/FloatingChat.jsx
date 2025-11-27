@@ -561,14 +561,14 @@ export default function FloatingChat({
                     <div className="flex flex-col items-start gap-2">
                       <div
                         className={cn(
-                          'px-4 py-1.5 rounded-full flex items-center gap-2 border shadow-sm',
+                          'w-[98%] px-4 py-1.5 rounded-2xl flex items-center gap-2 border shadow-sm',
                           isError
                             ? 'bg-red-50 border-red-100 text-red-600'
                             : 'bg-zinc-50 border-zinc-100 text-zinc-500'
                         )}
                       >
                         {isError ? <XIcon className="w-3 h-3" /> : <Bot className="w-3 h-3" />}
-                        <span>{msg.content}</span>
+                        <span className="break-words break-all">{msg.content}</span>
                       </div>
                       {isError && onRetryMessage && (
                         <button
