@@ -150,13 +150,19 @@ export function useEngineShared() {
       }
     }
 
+    // 构建请求体：访问密码模式下不传递 config
+    const isPasswordMode =
+      typeof window !== 'undefined' &&
+      localStorage.getItem('smart-diagram-use-password') === 'true';
+
+    const requestBody = isPasswordMode
+      ? { messages: fullMessages }
+      : { config: llmConfig, messages: fullMessages };
+
     const response = await fetch('/api/llm/stream', {
       method: 'POST',
       headers,
-      body: JSON.stringify({
-        config: llmConfig,
-        messages: fullMessages,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

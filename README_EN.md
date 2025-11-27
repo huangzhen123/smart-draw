@@ -5,6 +5,9 @@
 ## 🌐 Online Website
 Visit our online website to use directly: https://smart-draw.aizhi.site/
 
+## 📖 Documentation
+View detailed documentation: https://smart-draw-doc.aizhi.site/
+
 ## 中文版本
 阅读中文版本: [README.md](README.md)
 

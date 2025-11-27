@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function AppHeader() {
   const router = useRouter();
   const [isNoticeOpen, setIsNoticeOpen] = useState(false);
+  const [isSponsorOpen, setIsSponsorOpen] = useState(false);
 
   const handleLogoClick = () => {
     router.push("/");
@@ -46,6 +47,65 @@ export default function AppHeader() {
         
         {/* Right Actions */}
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+          {/* Notice Button */}
+          <button
+            type="button"
+            onClick={handleNoticeClick}
+            className="text-xs font-medium px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-50 to-rose-50 text-pink-600 border border-pink-200 hover:from-pink-100 hover:to-rose-100 hover:text-pink-700 hover:border-pink-300 transition-all shadow-sm active:scale-95"
+          >
+            🎁 限时领 Key
+          </button>
+          {/* Buy Me a Coffee Button */}
+          <button
+            type="button"
+            onClick={() => setIsSponsorOpen(true)}
+            className="text-xs font-medium px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-50 to-orange-50 text-amber-600 border border-amber-200 hover:from-amber-100 hover:to-orange-100 hover:text-amber-700 hover:border-amber-300 transition-all shadow-sm active:scale-95 flex items-center gap-1.5"
+            aria-label="Buy me a coffee"
+            title="Buy me a coffee"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+              <line x1="6" y1="1" x2="6" y2="4" />
+              <line x1="10" y1="1" x2="10" y2="4" />
+              <line x1="14" y1="1" x2="14" y2="4" />
+            </svg>
+            <span>请作者喝杯奶茶</span>
+          </button>
+          {/* Documentation Link */}
+          <a
+            href="https://smart-draw-doc.aizhi.site"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-gray-900 transition-colors p-1.5 hover:bg-gray-100 rounded-full"
+            aria-label="文档"
+            title="文档"
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+          </a>
           {/* GitHub Link */}
           <a
             href="https://github.com/liujuntao123/smart-draw"
@@ -65,14 +125,6 @@ export default function AppHeader() {
             </svg>
           </a>
 
-          {/* Notice Button */}
-          <button
-            type="button"
-            onClick={handleNoticeClick}
-            className="text-xs font-medium px-3 py-1.5 rounded-full bg-gradient-to-r from-pink-50 to-rose-50 text-pink-600 border border-pink-200 hover:from-pink-100 hover:to-rose-100 hover:text-pink-700 hover:border-pink-300 transition-all shadow-sm active:scale-95"
-          >
-            🎁 限时领 Key
-          </button>
         </div>
       </header>
 
@@ -107,6 +159,39 @@ export default function AppHeader() {
               <p className="mt-4 text-xs text-gray-500 text-center">
                 扫描上方二维码加入群聊
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isSponsorOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-200">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsSponsorOpen(false)} />
+          <div className="relative bg-white rounded-xl border border-gray-200 w-full max-w-sm mx-4 overflow-hidden shadow-2xl transform transition-all">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h2 className="text-sm font-semibold text-gray-800">
+                ☕ 请作者喝杯奶茶
+              </h2>
+              <button
+                type="button"
+                onClick={() => setIsSponsorOpen(false)}
+                className="text-gray-400 hover:text-gray-700 transition-colors p-1 rounded-md hover:bg-gray-200"
+                aria-label="关闭"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 bg-white flex flex-col items-center">
+              <div className="p-2 bg-white border border-gray-100 rounded-lg shadow-sm">
+                <img
+                  src="/sponsor.png"
+                  alt="赞助二维码"
+                  className="w-full h-auto rounded-md"
+                />
+              </div>
             </div>
           </div>
         </div>

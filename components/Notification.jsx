@@ -93,7 +93,7 @@ export default function Notification({
               </h3>
             )}
             {message && (
-              <p className={cn("text-xs leading-relaxed opacity-90", currentStyle.message)}>
+              <p className={cn("break-words break-all text-xs leading-relaxed opacity-90", currentStyle.message)}>
                 {message}
               </p>
             )}

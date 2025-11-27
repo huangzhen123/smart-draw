@@ -5,14 +5,14 @@
 ## 🌐 在线网站
 进入在线网站直接使用：https://smart-draw.aizhi.site/
 
+## 📖 文档
+查看详细使用文档：https://smart-draw-doc.aizhi.site/
 
 ## English Version
 Read the English version: [README_EN.md](README_EN.md)
 
 ## 一图流
-<img width="2816" height="1536" alt="Gemini_Generated_Image_pksufbpksufbpksu" src="https://github.com/user-attachments/assets/e6cea5b9-6121-4273-8c3e-43bb68a8c03e" />
-
-
+<img width="2816" height="1536" alt="Gemini_Generated_Image_2drs882drs882drs" src="https://github.com/user-attachments/assets/9a36cbbf-76b4-4590-b571-69220a28d758" />
 
 
 
@@ -95,6 +95,51 @@ pnpm dev
 ```
 
 访问 http://localhost:3000 即可使用。
+
+## 🐳 Docker 部署
+
+使用 Docker 可以快速部署，无需安装 Node.js 环境。
+
+### 方式一：使用 Docker Compose（推荐）
+
+1. 下载 `docker-compose.yml` 文件，或创建以下内容：
+
+```yaml
+services:
+  smart-draw:
+    image: ghcr.io/liujuntao123/smart-draw:latest
+    ports:
+      - "3010:3000"
+    env_file:
+      - .env  # 可选：从 .env 文件读取环境变量
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+```
+
+2. 如需配置服务器端 LLM，创建 `.env` 文件（参考 `.env.example`）：
+
+```bash
+ACCESS_PASSWORD=your-secure-password
+SERVER_LLM_TYPE=openai
+SERVER_LLM_BASE_URL=https://api.openai.com/v1
+SERVER_LLM_API_KEY=sk-your-api-key-here
+SERVER_LLM_MODEL=gpt-4
+```
+
+3. 启动容器：
+
+```bash
+docker-compose up -d
+```
+
+3. 访问 http://localhost:3010 即可使用。
+
+### 方式二：直接使用 Docker
+
+```bash
+docker run -d -p 3010:3000 ghcr.io/liujuntao123/smart-draw:latest
+```
 
 ### 配置服务器端 LLM（可选）
 

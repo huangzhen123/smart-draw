@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { callLLM } from '@/lib/llm-client';
+export const runtime = 'edge';
 
 /**
  * POST /api/llm/stream

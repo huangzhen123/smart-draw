@@ -240,6 +240,7 @@ export default function DrawPage() {
           detail: {
             engineType,
             code: targetCode,
+            open:true,
           },
         }),
       );
@@ -278,11 +279,12 @@ export default function DrawPage() {
 
   /**
    * 新建对话处理
-   * 调用引擎的handleNewChat
+   * 调用引擎的handleNewChat，同时清空代码编辑器
    */
   const handleNewChat = useCallback(() => {
+    clearFloatingCodeCache();
     engine.handleNewChat();
-  }, [engine]);
+  }, [engine, clearFloatingCodeCache]);
 
   /**
    * 恢复历史记录处理
@@ -381,18 +383,19 @@ export default function DrawPage() {
             new CustomEvent('canvas-code-changed', {
               detail: {
                 engineType: 'drawio',
-                code: xml,
+                code: xml
               },
             }),
           );
         }}
-        onAutosave={handleDrawioAutosave}
+        // onAutosave={handleDrawioAutosave}
       />
     );
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50" style={{ paddingRight: chatPanelWidth || 0 }}>
+    // <div className="flex flex-col h-screen bg-gray-50" style={{ paddingRight: chatPanelWidth || 0 }}>
+    <div className="flex flex-col h-screen bg-gray-50" style={{ paddingRight: 0 }}>
       {/* Header */}
       <AppHeader />
 

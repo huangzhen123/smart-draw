@@ -72,6 +72,20 @@ export default function FloatingChat({
 }) {
   const [isOpen, setIsOpen] = useState(true);
   const panelRef = useRef(null);
+
+  // ✨ 收起按钮的可拖拽位置状态
+  const [collapsedY, setCollapsedY] = useState(() => {
+    // 从 localStorage 读取保存的位置，默认 168px (top-42 = 10.5rem = 168px)
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('smart-diagram-collapsed-btn-y');
+      if (saved) return parseInt(saved, 10);
+    }
+    return 168;
+  });
+  const isDraggingRef = useRef(false);
+  const hasDraggedRef = useRef(false); // 标记是否发生过真正的拖拽
+  const dragStartYRef = useRef(0);
+  const dragStartTopRef = useRef(0);
   const [input, setInput] = useState('');
   const [images, setImages] = useState([]); // {file, url, name, type}
   const [files, setFiles] = useState([]); // {file, name, type, size}
@@ -343,20 +357,75 @@ export default function FloatingChat({
     }
   };
 
+  // ✨ 拖拽处理函数
+  const handleDragStart = (e) => {
+    // 阻止默认行为，避免选中文本
+    e.preventDefault();
+    isDraggingRef.current = true;
+    hasDraggedRef.current = false; // 重置拖拽标记
+    dragStartYRef.current = e.clientY || e.touches?.[0]?.clientY || 0;
+    dragStartTopRef.current = collapsedY;
+
+    // 用于存储最新的 Y 值，解决闭包问题
+    let latestY = collapsedY;
+
+    const handleDragMove = (moveEvent) => {
+      if (!isDraggingRef.current) return;
+      const clientY = moveEvent.clientY || moveEvent.touches?.[0]?.clientY || 0;
+      const deltaY = clientY - dragStartYRef.current;
+      // 超过 5px 的移动才算真正的拖拽
+      if (Math.abs(deltaY) > 5) {
+        hasDraggedRef.current = true;
+      }
+      const newY = dragStartTopRef.current + deltaY;
+      // 限制在视口范围内（留出按钮高度的边距）
+      const minY = 16;
+      const maxY = window.innerHeight - 72;
+      const clampedY = Math.max(minY, Math.min(maxY, newY));
+      latestY = clampedY;
+      setCollapsedY(clampedY);
+    };
+
+    const handleDragEnd = () => {
+      isDraggingRef.current = false;
+      if (hasDraggedRef.current) {
+        // 保存位置到 localStorage
+        localStorage.setItem('smart-diagram-collapsed-btn-y', String(latestY));
+      }
+      document.removeEventListener('mousemove', handleDragMove);
+      document.removeEventListener('mouseup', handleDragEnd);
+      document.removeEventListener('touchmove', handleDragMove);
+      document.removeEventListener('touchend', handleDragEnd);
+    };
+
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
+    document.addEventListener('touchmove', handleDragMove, { passive: false });
+    document.addEventListener('touchend', handleDragEnd);
+  };
+
   if (!isOpen) {
     return (
       <button
-        onClick={() => setIsOpen(true)}
-        className="fixed top-36 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-xl shadow-primary/20 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center z-50"
+        onMouseDown={handleDragStart}
+        onTouchStart={handleDragStart}
+        onClick={() => {
+          // 只有在没有发生拖拽时才触发点击
+          if (!hasDraggedRef.current) {
+            setIsOpen(true);
+          }
+        }}
+        style={{ top: collapsedY }}
+        className="fixed right-2 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-xl shadow-primary/20 hover:shadow-2xl hover:scale-105 active:scale-95 transition-shadow cursor-grab active:cursor-grabbing flex items-center justify-center z-50 select-none"
       >
-        <WandSparkles className="w-6 h-6" />
+        <WandSparkles className="w-6 h-6 pointer-events-none" />
       </button>
     );
   }
 
   return (
     <>
-    <Card ref={panelRef} className="fixed top-4 bottom-4 right-4 w-[420px] md:w-[440px] h-auto shadow-2xl flex flex-col z-50 bg-white/95 supports-[backdrop-filter]:bg-white/85 backdrop-blur-xl border border-zinc-200 rounded-[24px] overflow-hidden">
+    <Card ref={panelRef} className="fixed top-42 bottom-16 right-2 md:w-[340px] h-auto shadow-2xl flex flex-col z-50 bg-white/95 supports-[backdrop-filter]:bg-white/85 backdrop-blur-xl border border-zinc-200 rounded-[24px] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-3 bg-white/50 border-b border-zinc-100/50">
         {/* ✨ v6.0: 左侧 - 引擎切换下拉菜单 */}
@@ -444,13 +513,34 @@ export default function FloatingChat({
 
       {/* Messages Area */}
       <ScrollArea className="flex-1 px-5 py-2">
-        <div className="space-y-6 pb-4">
+        <div className="space-y-6 ">
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center text-center text-zinc-400 text-sm py-20 gap-3">
-              <div className="w-12 h-12 bg-zinc-50 rounded-2xl flex items-center justify-center mb-2">
-                <WandSparkles className="w-6 h-6 text-zinc-300" />
+            <div className="flex flex-col py-6 gap-4">
+              <div className="text-center text-zinc-400 text-sm mb-2">
+                <p>选择一个示例开始，或直接输入需求</p>
               </div>
-              <p>开始对话，其他的交给AI</p>
+              <div className="flex flex-col gap-2">
+                {[
+                  { text: '画一个用户登录流程图', icon: '🔐' },
+                  { text: '设计一个电商系统架构图', icon: '🏗️' },
+                  { text: '创建一个项目管理思维导图', icon: '🧠' },
+                  { text: '绘制公司组织架构图', icon: '👥' },
+                  { text: '画一个订单状态流转图', icon: '📦' },
+                  { text: '设计用户注册时序图', icon: '⏱️' },
+                ].map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setInput(item.text);
+                      textareaRef.current?.focus();
+                    }}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl border border-zinc-100 bg-white hover:bg-zinc-50 hover:border-zinc-200 transition-all text-left group"
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="text-sm text-zinc-600 group-hover:text-zinc-900">{item.text}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             messages.map((msg, idx) => {
@@ -471,14 +561,14 @@ export default function FloatingChat({
                     <div className="flex flex-col items-start gap-2">
                       <div
                         className={cn(
-                          'px-4 py-1.5 rounded-full flex items-center gap-2 border shadow-sm',
+                          'w-[98%] px-4 py-1.5 rounded-2xl flex items-center gap-2 border shadow-sm',
                           isError
                             ? 'bg-red-50 border-red-100 text-red-600'
                             : 'bg-zinc-50 border-zinc-100 text-zinc-500'
                         )}
                       >
                         {isError ? <XIcon className="w-3 h-3" /> : <Bot className="w-3 h-3" />}
-                        <span>{msg.content}</span>
+                        <span className="break-words break-all">{msg.content}</span>
                       </div>
                       {isError && onRetryMessage && (
                         <button
@@ -934,7 +1024,7 @@ function StreamingCodeBubble({ codeText }) {
         <pre
           ref={preRef}
           className={cn(
-            'font-mono text-[12px] leading-relaxed px-4 py-3 whitespace-pre-wrap break-words break-all text-zinc-600 max-h-[50vh] overflow-auto w-full max-w-full min-w-0'
+            'font-mono text-[12px] leading-relaxed px-4 py-3 whitespace-pre-wrap break-words break-all text-zinc-600 max-h-[36vh] overflow-auto w-full max-w-full min-w-0'
           )}
         >{codeText}</pre>
       </div>
@@ -1017,7 +1107,7 @@ function CodeBubble({ codeText, onApplyCode, onApplyXml }) {
           
           <pre
             className={cn(
-              'font-mono text-[12px] leading-6 px-4 py-4 pt-8 whitespace-pre-wrap break-words break-all text-zinc-700 max-h-[60vh] overflow-auto w-full max-w-full min-w-0'
+              'font-mono text-[12px] leading-6 px-4 py-4 pt-8 whitespace-pre-wrap break-words break-all text-zinc-700 max-h-[36vh] overflow-auto w-full max-w-full min-w-0'
             )}
           >{codeText}</pre>
         </div>

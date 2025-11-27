@@ -65,9 +65,9 @@ const DrawioCanvas = forwardRef(function DrawioCanvas(
         },
         autosave: (data) => {
           // Prefer XML provided by autosave for engine/state updates
-          if (onAutosave && data.xml) {
-            onAutosave(data.xml);
-          }
+          // if (onAutosave && data.xml) {
+          //   onAutosave(data.xml);
+          // }
 
           if (onSave && data.xml) {
             onSave(data.xml);
